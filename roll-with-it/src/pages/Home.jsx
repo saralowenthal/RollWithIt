@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function PackingListGrid() {
-  const [lists, setLists] = useState([
-    { id: 1, name: 'Beach Trip' },
-    { id: 2, name: 'Business Trip' },
-    { id: 3, name: 'Camping Weekend' },
-    { id: 4, name: 'City Break' },
-    { id: 5, name: 'Ski Holiday' },
-  ]);
+export default function Home() {
+    const [lists, setLists] = useState([
+        { id: 1, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
+        { id: 2, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
+        { id: 3, name: 'Camping Weekend', items: ['Tent', 'Flashlight', 'Snacks'] },
+        { id: 4, name: 'City Break', items: ['Camera', 'Walking Shoes'] },
+        { id: 5, name: 'Ski Holiday', items: ['Skis', 'Jacket', 'Gloves'] },
+    ]);
 
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
 
   const handleAdd = () => {
     if (!newName.trim()) return;
-    setLists([...lists, { id: Date.now(), name: newName.trim() }]);
+    setLists([...lists, { id: Date.now(), name: newName.trim(), items: [] }]);
     setNewName('');
     setAddingNew(false);
   };
@@ -38,71 +39,30 @@ export default function PackingListGrid() {
       </h2>
       <div className="row gx-4 gy-4 px-4">
         {lists.map((list) => (
-          <div key={list.id} className="col-6 col-md-3">
+        <Link
+            key={list.id}
+            to={`/list/${list.id}`}
+            state={{ list }}
+            className="col-6 col-md-3 text-decoration-none text-dark"
+        >
             <div
-              className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card"
-              style={{ aspectRatio: '4 / 3', cursor: 'default', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}
-              aria-label={list.name}
+            className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card"
+            style={{
+                aspectRatio: '4 / 3',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            }}
+            aria-label={list.name}
             >
-              <small
+            <small
                 className="text-center text-truncate w-100 mb-0 fw-semibold"
                 style={{ letterSpacing: '0.05em', fontSize: '1rem' }}
-              >
+            >
                 {list.name}
-              </small>
+            </small>
             </div>
-          </div>
+        </Link>
         ))}
-
-        {/* Add-new card */}
-        <div className="col-6 col-md-3">
-          <div
-            className="card h-100 bg-white rounded border d-flex align-items-center justify-content-center p-3"
-            style={{ aspectRatio: '4 / 3' }}
-            aria-label="Add new list"
-          >
-            {!addingNew ? (
-              <button
-                className="btn btn-outline-secondary rounded-circle p-0"
-                style={{ width: '44px', height: '44px', borderWidth: '1.5px' }}
-                onClick={() => setAddingNew(true)}
-                aria-label="Add new list"
-                type="button"
-              >
-                <i className="bi bi-plus-lg fs-4"></i>
-              </button>
-            ) : (
-              <div className="input-group input-group-sm">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Name"
-                  value={newName}
-                  onChange={e => setNewName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleAdd()}
-                  autoFocus
-                />
-                <button
-                  className="btn btn-outline-success"
-                  onClick={handleAdd}
-                  disabled={!newName.trim()}
-                >
-                  <i className="bi bi-check-lg"></i>
-                </button>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => {
-                    setAddingNew(false);
-                    setNewName('');
-                  }}
-                >
-                  <i className="bi bi-x-lg"></i>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       <style>{`
         .list-card:hover {
@@ -111,6 +71,44 @@ export default function PackingListGrid() {
           cursor: pointer;
         }
       `}</style>
+      {/* Add new list UI */}
+      <div className="col-6 col-md-3 d-flex align-items-center justify-content-center">
+        {addingNew ? (
+          <div className="card h-100 w-100 p-3 d-flex flex-column align-items-center justify-content-center">
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="List name"
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              autoFocus
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAdd();
+                if (e.key === 'Escape') setAddingNew(false);
+              }}
+            />
+            <div>
+              <button className="btn btn-primary btn-sm me-2" onClick={handleAdd}>
+                Add
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setAddingNew(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+            style={{ aspectRatio: '4 / 3', fontSize: '2rem' }}
+            onClick={() => setAddingNew(true)}
+            aria-label="Add new list"
+          >
+            +
+            <span style={{ fontSize: '1rem', fontWeight: 500 }}>Add New</span>
+          </button>
+        )}
+      </div>
+      </div>
     </div>
   );
 }
