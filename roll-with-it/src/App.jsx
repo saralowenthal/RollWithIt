@@ -1,12 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './Navbar';
-import Home from './Home';
-import About from './About';
-import List from './List';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import About from './pages/About';
+import List from './pages/List';
 import './App.css';
 
 function App() {
   return (
+
     <div>
       <Navbar />
       <Routes>
@@ -16,6 +17,5 @@ function App() {
       </Routes>
     </div>
   );
-}
 
 export default App
