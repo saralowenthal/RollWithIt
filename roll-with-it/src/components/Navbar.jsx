@@ -44,7 +44,7 @@ const Navbar = () => {
             {[
               { path: '/', label: 'Home' },
               { path: '/about', label: 'About' },
-              { path: '/list', label: 'Packing List' },
+              // Packing List removed here
             ].map(({ path, label }) => (
               <NavLink
                 key={path}
@@ -53,18 +53,18 @@ const Navbar = () => {
                   'nav-link' + (isActive ? ' active fw-semibold' : '')
                 }
                 style={({ isActive }) => ({
-                  color: isActive ? '#0056b3' : '#495057', // darker blue when active
+                  color: isActive ? '#0056b3' : '#495057',
                   borderRadius: '6px',
                   padding: '6px 15px',
                   transition: 'color 0.3s ease',
                 })}
                 onMouseEnter={(e) => {
                   if (!e.target.classList.contains('active'))
-                    e.target.style.color = '#007bff'; // bright blue on hover
+                    e.target.style.color = '#007bff';
                 }}
                 onMouseLeave={(e) => {
                   if (!e.target.classList.contains('active'))
-                    e.target.style.color = '#495057'; // default dark gray
+                    e.target.style.color = '#495057';
                 }}
               >
                 {label}
