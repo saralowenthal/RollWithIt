@@ -100,7 +100,7 @@ return (
         {/* Save and Return Button */}
         <div className="mt-4">
             <button
-                className="btn btn-primary"
+                className="btn btn-outline-primary"
                 onClick={() => {
                     navigate('/', {
                     state: {
