@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function Home() {
+function Home() {
   const [lists, setLists] = useState([
       { id: 1751426557617, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
       { id: 1751426562596, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
