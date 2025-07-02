@@ -5,23 +5,38 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function Home() {
   const location = useLocation();
 
-  const [lists, setLists] = useState([
-    { id: 1, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
-    { id: 2, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
-    { id: 3, name: 'Camping Weekend', items: ['Tent', 'Flashlight', 'Snacks'] },
-    { id: 4, name: 'City Break', items: ['Camera', 'Walking Shoes'] },
-    { id: 5, name: 'Ski Holiday', items: ['Skis', 'Jacket', 'Gloves'] },
-  ]);
-
+  const [lists, setLists] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
 
+  // Replace this with your actual Lambda API Gateway URL
+  const LAMBDA_API_URL = 'https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists';
+
+  // Fetch all lists from Lambda
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const res = await fetch(LAMBDA_API_URL);
+        const data = await res.json();
+        setLists(data);
+      } catch (error) {
+        console.error("Error fetching lists:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLists();
+  }, []);
+
+  // If list was updated from another route
   useEffect(() => {
     const updatedList = location.state?.updatedList;
     if (updatedList) {
       setLists((prevLists) =>
         prevLists.map((list) =>
-          list.id === updatedList.id ? updatedList : list
+          list.pk === updatedList.pk ? updatedList : list
         )
       );
     }
@@ -29,28 +44,67 @@ function Home() {
 
   const handleAdd = () => {
     if (!newName.trim()) return;
-    setLists([...lists, { id: Date.now(), name: newName.trim(), items: [] }]);
+    setLists([...lists, { pk: Date.now().toString(), title: newName.trim(), items: [] }]);
     setNewName('');
     setAddingNew(false);
   };
 
+  if (loading) {
+    return (
+      <div className="container-fluid vh-100 py-5 bg-light text-center">
+        <h2>Loading your packing lists...</h2>
+      </div>
+    );
+  }
+
+  if (!lists.length) {
+    return (
+      <div className="container-fluid py-5 bg-light text-center">
+        <h4>No packing lists found.</h4>
+        <button className="btn btn-primary mt-3" onClick={() => setAddingNew(true)}>Create One</button>
+      </div>
+    );
+  }
+
   return (
     <div className="container-fluid vh-100 py-5 bg-light">
-      <h2 className="text-center" style={{ fontWeight: '700', letterSpacing: '0.15em', color: '#212529', borderBottom: '3px solid #6c757d', display: 'inline-block', paddingBottom: '0.25rem', marginBottom: '2rem' }}>
+      <h2
+        className="text-center"
+        style={{
+          fontWeight: '700',
+          letterSpacing: '0.15em',
+          color: '#212529',
+          borderBottom: '3px solid #6c757d',
+          display: 'inline-block',
+          paddingBottom: '0.25rem',
+          marginBottom: '2rem',
+        }}
+      >
         Your Packing Lists
       </h2>
 
       <div className="row gx-4 gy-4 px-4">
         {lists.map((list) => (
           <Link
-            key={list.id}
-            to={`/list/${list.id}`}
+            key={list.pk}
+            to={`/list/${list.pk}`}
             state={{ list }}
             className="col-6 col-md-3 text-decoration-none text-dark"
           >
-            <div className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card" style={{ aspectRatio: '4 / 3', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }} aria-label={list.name}>
-              <small className="text-center text-truncate w-100 mb-0 fw-semibold" style={{ letterSpacing: '0.05em', fontSize: '1rem' }}>
-                {list.name}
+            <div
+              className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card"
+              style={{
+                aspectRatio: '4 / 3',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              }}
+              aria-label={list.title}
+            >
+              <small
+                className="text-center text-truncate w-100 mb-0 fw-semibold"
+                style={{ letterSpacing: '0.05em', fontSize: '1rem' }}
+              >
+                {list.title}
               </small>
             </div>
           </Link>
@@ -90,7 +144,12 @@ function Home() {
               </div>
             </div>
           ) : (
-            <button className="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center" style={{ aspectRatio: '4 / 3', fontSize: '2rem' }} onClick={() => setAddingNew(true)} aria-label="Add new list">
+            <button
+              className="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+              style={{ aspectRatio: '4 / 3', fontSize: '2rem' }}
+              onClick={() => setAddingNew(true)}
+              aria-label="Add new list"
+            >
               +
               <span style={{ fontSize: '1rem', fontWeight: 500 }}>Add New</span>
             </button>

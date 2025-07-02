@@ -1,122 +1,62 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function List() {
-  const location = useLocation();
+  const { id } = useParams(); // gets listId from URL
   const navigate = useNavigate();
 
-  const passedList = location.state?.list;
+  const [listData, setListData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const initialItems = (passedList.items || []).map((item) =>
-    typeof item === 'string'
-      ? { id: Date.now() + Math.random(), text: item, checked: false }
-      : item
-  );
+  // Replace with your real Lambda API endpoint
+  const LAMBDA_API_URL = `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getPackingList`;
 
-  const [items, setItems] = useState(initialItems);
-  const [newItem, setNewItem] = useState('');
+  useEffect(() => {
+    const fetchList = async () => {
+      try {
+        const res = await fetch(LAMBDA_API_URL);
+        const data = await res.json();
+        setListData(data);
+      } catch (err) {
+        console.error("Failed to fetch list:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleAddItem = () => {
-    const trimmed = newItem.trim();
-    if (!trimmed) return;
+    fetchList();
+  }, [id]);
 
-    setItems([
-      ...items,
-      {
-        id: Date.now(),
-        text: trimmed,
-        checked: false,
-      },
-    ]);
-    setNewItem('');
-  };
-
-  const toggleItemCheck = (itemId) => {
-    setItems(
-      items.map((item) =>
-        item.id === itemId ? { ...item, checked: !item.checked } : item
-      )
+  if (loading) {
+    return (
+      <div className="container text-center py-5">
+        <h2>Loading list...</h2>
+      </div>
     );
-  };
+  }
 
-return (
-    <div className="container py-5" style={{ maxWidth: '700px' }}>
-        <div className="d-flex justify-content-center align-items-center mb-4">
-            <h2 className="fw-bold mb-0 text-center">{passedList.name}</h2>
-        </div>
+  if (!listData) {
+    return (
+      <div className="container text-center py-5">
+        <h2>List not found</h2>
+        <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>Go Back</button>
+      </div>
+    );
+  }
 
-        {/* List of Items */}
-        <ul className="list-group mb-4">
-            {items.length === 0 ? (
-                <li className="list-group-item text-muted fst-italic">
-                    No items yet.
-                </li>
-            ) : (
-                items.map((item) => (
-                    <li
-                        key={item.id}
-                        className="list-group-item d-flex align-items-center"
-                    >
-                        <input
-                            type="checkbox"
-                            className="form-check-input me-3"
-                            checked={item.checked}
-                            onChange={() => toggleItemCheck(item.id)}
-                            id={`item-${item.id}`}
-                        />
-                        <label
-                            htmlFor={`item-${item.id}`}
-                            className={`mb-0 flex-grow-1 ${
-                                item.checked ? 'text-decoration-line-through text-muted' : ''
-                            }`}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            {item.text}
-                        </label>
-                    </li>
-                ))
-            )}
-        </ul>
-
-        {/* Add New Item */}
-        <div className="input-group">
-            <input
-                type="text"
-                className="form-control"
-                placeholder="Add new item"
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-            />
-            <button
-                className="btn btn-primary"
-                onClick={handleAddItem}
-                disabled={!newItem.trim()}
-            >
-                Add
-            </button>
-        </div>
-        {/* Save and Return Button */}
-        <div className="mt-4">
-            <button
-                className="btn btn-outline-primary"
-                onClick={() => {
-                    navigate('/', {
-                    state: {
-                        updatedList: {
-                        ...passedList,
-                        items,
-                        },
-                    },
-                });
-            }}
-        >
-            Save and Return Home
-        </button>
+  return (
+    <div className="container py-5">
+      <h2 className="mb-4 text-center">{listData.name}</h2>
+      <ul className="list-group">
+        {listData.items.map((item, index) => (
+          <li key={index} className="list-group-item">
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
-</div>
-);
+  );
 }
 
 export default List;
