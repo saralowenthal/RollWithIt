@@ -13,22 +13,23 @@ function Home() {
   // Replace this with your actual Lambda API Gateway URL
   const LAMBDA_API_URL = 'https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists';
 
-  // Fetch all lists from Lambda
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const res = await fetch(LAMBDA_API_URL);
-        const data = await res.json();
-        setLists(data);
-      } catch (error) {
-        console.error("Error fetching lists:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchLists = async () => {
+    try {
+      const res = await fetch(LAMBDA_API_URL);
+      const data = await res.json();
 
-    fetchLists();
-  }, []);
+      console.log("Fetched lists directly:", data); // data is the array of packing lists
+      setLists(data); // ✅ No JSON.parse needed
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchLists();
+}, []);
 
   // If list was updated from another route
   useEffect(() => {
