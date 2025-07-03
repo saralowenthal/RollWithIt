@@ -1,38 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home() {
-  const location = useLocation();
-
   const [lists, setLists] = useState([
-    { id: 1, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
-    { id: 2, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
-    { id: 3, name: 'Camping Weekend', items: ['Tent', 'Flashlight', 'Snacks'] },
-    { id: 4, name: 'City Break', items: ['Camera', 'Walking Shoes'] },
-    { id: 5, name: 'Ski Holiday', items: ['Skis', 'Jacket', 'Gloves'] },
+      { id: 1751426557617, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
+      { id: 1751426562596, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
+      { id: 1751426571398, name: 'Camping Weekend', items: ['Tent', 'Flashlight', 'Snacks'] },
+      { id: 1751426577444, name: 'City Break', items: ['Camera', 'Walking Shoes'] },
+      { id: 1751426582135, name: 'Ski Holiday', items: ['Skis', 'Jacket', 'Gloves'] },
   ]);
-
+  
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
 
-  useEffect(() => {
-    const updatedList = location.state?.updatedList;
-    if (updatedList) {
-      setLists((prevLists) =>
-        prevLists.map((list) =>
-          list.id === updatedList.id ? updatedList : list
-        )
-      );
-    }
-  }, [location.state]);
-
-  const handleAdd = () => {
-    if (!newName.trim()) return;
-    setLists([...lists, { id: Date.now(), name: newName.trim(), items: [] }]);
+  const handleAdd = async () => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+  
+    const newList = {
+      id: Date.now(),
+      name: trimmed,
+      items: []
+    };
+  
+    // Update local state
+    setLists([...lists, newList]);
     setNewName('');
     setAddingNew(false);
-  };
+  
+    // Save to server
+    const payload = {
+      packingListId: String(newList.id),
+      title: trimmed
+    };
+  
+    try {
+      const res = await fetch("https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/createPackingList", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await res.json();
+      console.log("List created:", data);
+    } catch (error) {
+      console.error("Failed to create packing list:", error);
+      alert("Error creating list on the server.");
+    }
+  };  
 
   return (
     <div className="container-fluid vh-100 py-5 bg-light">
