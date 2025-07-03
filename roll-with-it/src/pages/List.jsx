@@ -84,107 +84,110 @@ const handleUpdateItem = async (index, newText) => {
     );
   };
 
-  const handleUpdateListName = async (newName) => {
-    const trimmed = newName.trim();
-    if (!trimmed) return;
+const handleUpdateListName = async (newName) => {
+  const trimmed = newName.trim();
+  if (!trimmed) return;
 
-    // Update local state
-    setPassedList((prev) => ({ ...prev, name: trimmed }));
+  // Update local state
+  setPassedList((prev) => ({ ...prev, name: trimmed }));
 
-    try {
-        const res = await fetch(
-        `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/$default/updatePackingList?listId=${listId}`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ newName: trimmed }),
-        }
-        );
+  try {
+    const res = await fetch(
+      `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/$default/updatePackingList?listId=${listId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newName: trimmed }),
+      }
+    );
 
-        if (!res.ok) throw new Error("Server error");
+    if (!res.ok) throw new Error("Server error");
 
-        console.log("List name updated on server:", trimmed);
-    } catch (error) {
-        console.error("Failed to update list name on server:", error);
-        alert("Error updating list name on server.");
-    }
-    };
+    console.log("List name updated on server:", trimmed);
+  } catch (error) {
+    console.error("Failed to update list name on server:", error);
+    alert("Error updating list name on server.");
+  }
+};
 
-
-  return (
-    <div className="container py-5" style={{ maxWidth: '700px' }}>
-      <div className="d-flex justify-content-center align-items-center mb-4">
-        <div className="input-group mb-3 justify-content-center">
-        <input
-            type="text"
-            className="form-control text-center fw-bold"
-            style={{ fontSize: "1.5rem", maxWidth: "400px" }}
-            value={passedList.name}
-            onChange={(e) => setPassedList({ ...passedList, name: e.target.value })}
-            onBlur={(e) => handleUpdateListName(e.target.value)}
-            onKeyDown={(e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                e.target.blur();
-            }
-            }}
-        />
-        </div>
-        </div>
-
-      {/* List of Items */}
-        <ul className="list-group mb-4">
-        {items.length === 0 ? (
-            <li className="list-group-item text-muted fst-italic">No items yet.</li>
-        ) : (
-            items.map((item) => (
-            <li
-                key={item.id}
-                className="list-group-item d-flex align-items-center"
-            >
-                <input
-                type="checkbox"
-                className="form-check-input me-3"
-                checked={item.checked}
-                onChange={() => toggleItemCheck(item.id)}
-                id={`item-${item.id}`}
-                />
-                <input
-                type="text"
-                value={item.text}
-                onChange={(e) => handleUpdateItem(
-                    items.findIndex(i => i.id === item.id),
-                    e.target.value
-                )}
-                className={`form-control flex-grow-1 border-0 ${
-                    item.checked ? "text-decoration-line-through text-muted" : ""
-                }`}
-                style={{ cursor: 'text' }}
-                aria-label={`Edit item ${item.text}`}
-                />
-            </li>
-            ))
-        )}
-        </ul>
-
-      {/* Add New Item */}
-      <div className="input-group">
+return (
+  <div className="container py-5" style={{ maxWidth: '700px' }}>
+    <div className="d-flex justify-content-center align-items-center mb-4">
+      <div className="input-group mb-3 justify-content-center">
         <input
           type="text"
-          className="form-control"
-          placeholder="Add new item"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+          className="form-control text-center fw-bold"
+          style={{ fontSize: "1.5rem", maxWidth: "400px" }}
+          value={passedList.name}
+          onChange={(e) => setPassedList({ ...passedList, name: e.target.value })}
+          onBlur={(e) => handleUpdateListName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.target.blur();
+            }
+          }}
         />
-        <button
-          className="btn btn-primary"
-          onClick={handleAddItem}
-          disabled={!newItem.trim()}
-        >
-          Add
-        </button>
       </div>
+    </div>
+
+    {/* List of Items */}
+    <ul className="list-group mb-4">
+      {items.length === 0 ? (
+        <li className="list-group-item text-muted fst-italic">No items yet.</li>
+      ) : (
+        items.map((item) => (
+          <li
+            key={item.id}
+            className="list-group-item d-flex align-items-center"
+          >
+            <input
+              type="checkbox"
+              className="form-check-input me-3"
+              checked={item.checked}
+              onChange={() => toggleItemCheck(item.id)}
+              id={`item-${item.id}`}
+            />
+            <input
+              type="text"
+              value={item.text}
+              onChange={(e) =>
+                handleUpdateItem(
+                  items.findIndex((i) => i.id === item.id),
+                  e.target.value
+                )
+              }
+              className={`form-control flex-grow-1 border-0 ${
+                item.checked ? "text-decoration-line-through text-muted" : ""
+              }`}
+              style={{ cursor: 'text' }}
+              aria-label={`Edit item ${item.text}`}
+            />
+          </li>
+        ))
+      )}
+    </ul>
+  </div>
+);
+
+{/* Add New Item */}
+    <div className="input-group">
+      <input
+        type="text"
+        className="form-control"
+        placeholder="Add new item"
+        value={newItem}
+        onChange={(e) => setNewItem(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+      />
+      <button
+        className="btn btn-primary"
+        onClick={handleAddItem}
+        disabled={!newItem.trim()}
+      >
+        Add
+      </button>
+    </div>
 
       {/* Just return home */}
       <div className="mt-4">
