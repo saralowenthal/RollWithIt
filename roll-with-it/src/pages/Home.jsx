@@ -1,26 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home() {
-  const [lists, setLists] = useState([
-      { id: 1751426557617, name: 'Beach Trip', items: ['Swimsuit', 'Sunscreen', 'Towel'] },
-      { id: 1751426562596, name: 'Business Trip', items: ['Laptop', 'Notebook', 'Charger'] },
-      { id: 1751426571398, name: 'Camping Weekend', items: ['Tent', 'Flashlight', 'Snacks'] },
-      { id: 1751426577444, name: 'City Break', items: ['Camera', 'Walking Shoes'] },
-      { id: 1751426582135, name: 'Ski Holiday', items: ['Skis', 'Jacket', 'Gloves'] },
-  ]);
-  
+  const location = useLocation();
+
+  const [lists, setLists] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
+
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const res = await fetch('https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists');
+        const data = await res.json();
+        
+        console.log("Fetched lists directly:", data); // data is the array of packing lists
+        setLists(data);
+      } catch (error) {
+        console.error("Error fetching lists:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLists();
+  }, []);
+
+  // If list was updated from another route
+  useEffect(() => {
+    const updatedList = location.state?.updatedList;
+    if (updatedList) {
+      setLists((prevLists) =>
+        prevLists.map((list) =>
+          list.pk === updatedList.pk ? updatedList : list
+        )
+      );
+    }
+  }, [location.state]);
 
   const handleAdd = async () => {
     const trimmed = newName.trim();
     if (!trimmed) return;
   
     const newList = {
-      id: Date.now(),
-      name: trimmed,
+      pk: String(Date.now()),
+      title: trimmed,
       items: []
     };
   
@@ -31,7 +57,7 @@ function Home() {
   
     // Save to server
     const payload = {
-      packingListId: String(newList.id),
+      packingListId: newList.pk,
       title: trimmed
     };
   
@@ -59,14 +85,14 @@ function Home() {
       <div className="row gx-4 gy-4 px-4">
         {lists.map((list) => (
           <Link
-            key={list.id}
-            to={`/list/${list.id}`}
+            key={list.pk}
+            to={`/list/${list.pk}`}
             state={{ list }}
             className="col-6 col-md-3 text-decoration-none text-dark"
           >
-            <div className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card" style={{ aspectRatio: '4 / 3', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }} aria-label={list.name}>
+            <div className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card" style={{ aspectRatio: '4 / 3', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }} aria-label={list.title}>
               <small className="text-center text-truncate w-100 mb-0 fw-semibold" style={{ letterSpacing: '0.05em', fontSize: '1rem' }}>
-                {list.name}
+                {list.title}
               </small>
             </div>
           </Link>
