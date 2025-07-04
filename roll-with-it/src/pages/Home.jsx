@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home() {
@@ -10,26 +10,23 @@ function Home() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
 
-  // Replace this with your actual Lambda API Gateway URL
-  const LAMBDA_API_URL = 'https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists';
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const res = await fetch('https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists');
+        const data = await res.json();
+        
+        console.log("Fetched lists directly:", data); // data is the array of packing lists
+        setLists(data);
+      } catch (error) {
+        console.error("Error fetching lists:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-useEffect(() => {
-  const fetchLists = async () => {
-    try {
-      const res = await fetch(LAMBDA_API_URL);
-      const data = await res.json();
-
-      console.log("Fetched lists directly:", data); // data is the array of packing lists
-      setLists(data); // ✅ No JSON.parse needed
-    } catch (error) {
-      console.error("Error fetching lists:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchLists();
-}, []);
+    fetchLists();
+  }, []);
 
   // If list was updated from another route
   useEffect(() => {
@@ -43,44 +40,45 @@ useEffect(() => {
     }
   }, [location.state]);
 
-  const handleAdd = () => {
-    if (!newName.trim()) return;
-    setLists([...lists, { pk: Date.now().toString(), title: newName.trim(), items: [] }]);
+  const handleAdd = async () => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+  
+    const newList = {
+      pk: String(Date.now()),
+      title: trimmed,
+      items: []
+    };
+  
+    // Update local state
+    setLists([...lists, newList]);
     setNewName('');
     setAddingNew(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="container-fluid vh-100 py-5 bg-light text-center">
-        <h2>Loading your packing lists...</h2>
-      </div>
-    );
-  }
-
-  if (!lists.length) {
-    return (
-      <div className="container-fluid py-5 bg-light text-center">
-        <h4>No packing lists found.</h4>
-        <button className="btn btn-primary mt-3" onClick={() => setAddingNew(true)}>Create One</button>
-      </div>
-    );
-  }
+  
+    // Save to server
+    const payload = {
+      packingListId: newList.pk,
+      title: trimmed
+    };
+  
+    try {
+      const res = await fetch("https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/createPackingList", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await res.json();
+      console.log("List created:", data);
+    } catch (error) {
+      console.error("Failed to create packing list:", error);
+      alert("Error creating list on the server.");
+    }
+  };  
 
   return (
     <div className="container-fluid vh-100 py-5 bg-light">
-      <h2
-        className="text-center"
-        style={{
-          fontWeight: '700',
-          letterSpacing: '0.15em',
-          color: '#212529',
-          borderBottom: '3px solid #6c757d',
-          display: 'inline-block',
-          paddingBottom: '0.25rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <h2 className="text-center" style={{ fontWeight: '700', letterSpacing: '0.15em', color: '#212529', borderBottom: '3px solid #6c757d', display: 'inline-block', paddingBottom: '0.25rem', marginBottom: '2rem' }}>
         Your Packing Lists
       </h2>
 
@@ -92,19 +90,8 @@ useEffect(() => {
             state={{ list }}
             className="col-6 col-md-3 text-decoration-none text-dark"
           >
-            <div
-              className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card"
-              style={{
-                aspectRatio: '4 / 3',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              }}
-              aria-label={list.title}
-            >
-              <small
-                className="text-center text-truncate w-100 mb-0 fw-semibold"
-                style={{ letterSpacing: '0.05em', fontSize: '1rem' }}
-              >
+            <div className="card h-100 bg-white text-dark rounded border d-flex align-items-center justify-content-center p-3 list-card" style={{ aspectRatio: '4 / 3', cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }} aria-label={list.title}>
+              <small className="text-center text-truncate w-100 mb-0 fw-semibold" style={{ letterSpacing: '0.05em', fontSize: '1rem' }}>
                 {list.title}
               </small>
             </div>
@@ -145,12 +132,7 @@ useEffect(() => {
               </div>
             </div>
           ) : (
-            <button
-              className="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center"
-              style={{ aspectRatio: '4 / 3', fontSize: '2rem' }}
-              onClick={() => setAddingNew(true)}
-              aria-label="Add new list"
-            >
+            <button className="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center" style={{ aspectRatio: '4 / 3', fontSize: '2rem' }} onClick={() => setAddingNew(true)} aria-label="Add new list">
               +
               <span style={{ fontSize: '1rem', fontWeight: 500 }}>Add New</span>
             </button>
