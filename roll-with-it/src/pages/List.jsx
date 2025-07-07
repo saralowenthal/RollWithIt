@@ -75,6 +75,35 @@ function List() {
     }
   };
 
+  const handleUpdateItem = async (index, newText) => {
+    const trimmed = toTitleCase(newText.trim());
+    if (!trimmed) return;
+    if (index < 0 || index >= items.length) return;
+  
+    // Update local state immediately
+    const updatedItems = [...items];
+    updatedItems[index] = { ...updatedItems[index], text: trimmed };
+    setItems(updatedItems);
+  
+    try {
+      const res = await fetch(
+        `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/updatePackingListItem?listId=${listData.pk}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ index, newItem: trimmed }),
+        }
+      );
+  
+      if (!res.ok) throw new Error("Server error");
+  
+      console.log("Item updated on server:", trimmed);
+    } catch (error) {
+      console.error("Failed to update item on server:", error);
+      alert("Error updating item on server.");
+    }
+  };
+
   const toggleItemCheck = (itemId) => {
     // Future idea: POST request to change `checked` value
     setItems(
@@ -82,6 +111,32 @@ function List() {
         item.id === itemId ? { ...item, checked: !item.checked } : item
       )
     );
+  };
+
+  const handleUpdateListName = async (newName) => {
+    const trimmed = toTitleCase(newName.trim());
+    if (!trimmed) return;
+
+    // Update local state
+    setListData((prev) => ({ ...prev, title: trimmed }));
+
+    try {
+        const res = await fetch(
+          `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/updatePackingList?listId=${listData.pk}`,
+          {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: trimmed }),
+          }
+        );
+
+        if (!res.ok) throw new Error("Server error");
+
+        console.log("List name updated on server:", trimmed);
+    } catch (error) {
+        console.error("Failed to update list name on server:", error);
+        alert("Error updating list name on server.");
+    }
   };
 
   useEffect(() => {
@@ -108,7 +163,23 @@ function List() {
   return (
     <div className="container py-5" style={{ maxWidth: '700px' }}>
       <div className="d-flex justify-content-center align-items-center mb-4">
-        <h2 className="fw-bold mb-0 text-center">{listData.title}</h2>
+        {/* <h2 className="fw-bold mb-0 text-center">{listData.title}</h2> */}
+        <div className="input-group mb-3 justify-content-center">
+          <input
+              type="text"
+              className="form-control text-center fw-bold"
+              style={{ fontSize: "1.5rem", maxWidth: "400px" }}
+              value={listData.title}
+              onChange={(e) => setListData({ ...listData, title: e.target.value })}
+              onBlur={(e) => handleUpdateListName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+              }}
+          />
+        </div>
       </div>
 
       {/* List of Items */}
@@ -128,15 +199,22 @@ function List() {
                 onChange={() => toggleItemCheck(item.id)}
                 id={`item-${item.id}`}
               />
-              <label
-                htmlFor={`item-${item.id}`}
-                className={`mb-0 flex-grow-1 ${
-                  item.checked ? 'text-decoration-line-through text-muted' : ''
+              <input
+                type="text"
+                value={item.text}
+                onChange={(e) => setItems(
+                  items.map((i) => i.id === item.id ? { ...i, text: e.target.value } : i)
+                )}
+                onBlur={(e) => handleUpdateItem(
+                    items.findIndex(i => i.id === item.id),
+                    e.target.value
+                )}
+                className={`form-control flex-grow-1 border-0 ${
+                    item.checked ? "text-decoration-line-through text-muted" : ""
                 }`}
-                style={{ cursor: 'pointer' }}
-              >
-                {item.text}
-              </label>
+                style={{ cursor: 'text' }}
+                aria-label={`Edit item ${item.text}`}
+                />
             </li>
           ))
         )}
