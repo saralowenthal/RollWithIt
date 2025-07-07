@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for React frontend + API + DynamoDB + 6 Lambdas
+
+Globals:
+  Function:
+    Timeout: 10       # Default Lambda timeout (seconds)
+    Runtime: nodejs18.x
+    MemorySize: 256
+
+Resources:
+
+  # DynamoDB Table
+  roll_with_it:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: roll_with_it
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  # React frontend bucket (for static hosting)
+  ReactAppBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: wits-sam-deployments
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+  ReactAppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ReactAppBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${ReactAppBucket.Arn}/*'
+
+  # API Gateway Rest API (SAM will auto-create it)
+  MyApi: 
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: $default
+
+  # Lambda functions (6 total)
+  createPackingList:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: createPackingList
+      Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      CodeUri: ./src/createPackingList
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /createPackingList
+            Method: post
+
+  addToPackingList:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: addToPackingList
+      Handler: index.handler
+      CodeUri: ./src/addToPackingList
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /addToPackingList
+            Method: post
+
+  getAllPackingLists:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getAllPackingLists
+      Handler: index.handler
+      CodeUri: ./src/getAllPackingLists
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /getAllPackingLists
+            Method: get
+
+  getPackingList:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getPackingList
+      Handler: index.handler
+      CodeUri: ./src/getPackingList
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /getPackingList
+            Method: get
+
+  updatePackingList:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: updatePackingList
+      Handler: index.handler
+      CodeUri: ./src/updatePackingList
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /updatePackingList
+            Method: post
+
+  updatePackingListItem:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: updatePackingListItem
+      Handler: index.handler
+      CodeUri: ./src/updatePackingListItem
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: roll_with_it
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /updatePackingListItem
+            Method: post
+
+Outputs:
+  ReactAppBucketName:
+    Description: "S3 Bucket hosting React frontend"
+    Value: !Ref ReactAppBucket
+
+  ApiUrl:
+    Description: "HTTP API endpoint base URL"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/"
