@@ -42,4 +42,4 @@ export const handler = async (event) => {
       body: JSON.stringify("Error retrieving items from DynamoDB"),
     };
   }
-};
+};   
