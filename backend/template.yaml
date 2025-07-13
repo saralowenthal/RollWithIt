@@ -14,12 +14,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: createPackingList
-      Handler: index.handler
+      Handler: createPackingList/index.handler
       Runtime: nodejs22.x
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
-      CodeUri: ./src/createPackingList
+      CodeUri: ./src
       Events:
         ApiEvent:
           Type: HttpApi
@@ -32,9 +32,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: addToPackingList
-      Handler: index.handler
+      Handler: addToPackingList/index.handler
       Runtime: nodejs22.x
-      CodeUri: ./src/addToPackingList
+      CodeUri: ./src
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
@@ -50,9 +50,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getAllPackingLists
-      Handler: index.handler
+      Handler: getAllPackingLists/index.handler
       Runtime: nodejs22.x
-      CodeUri: ./src/getAllPackingLists
+      CodeUri: ./src
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
@@ -68,9 +68,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getPackingList
-      Handler: index.handler
+      Handler: getPackingList/index.handler
       Runtime: nodejs22.x
-      CodeUri: ./src/getPackingList
+      CodeUri: ./src
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
@@ -86,9 +86,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: updatePackingList
-      Handler: index.handler
+      Handler: updatePackingList/index.handler
       Runtime: nodejs22.x
-      CodeUri: ./src/updatePackingList
+      CodeUri: ./src
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
@@ -104,9 +104,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: updatePackingListItem
-      Handler: index.handler
+      Handler: updatePackingListItem/index.handler
       Runtime: nodejs22.x
-      CodeUri: ./src/updatePackingListItem
+      CodeUri: ./src
       Policies:
         - DynamoDBCrudPolicy:
             TableName: roll_with_it
@@ -121,4 +121,4 @@ Resources:
 Outputs:
   ApiUrl:
     Description: "HTTP API endpoint base URL"
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value: !Sub "https://${RollWithIt}.execute-api.${AWS::Region}.amazonaws.com"

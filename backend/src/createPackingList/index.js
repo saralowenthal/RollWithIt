@@ -8,7 +8,7 @@ const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
-  console.log("Raw event:", event);
+  console.log("Event received:", event);
 
   let body;
   try {

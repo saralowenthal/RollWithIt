@@ -6,9 +6,9 @@ const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*", // Replace "*" with your frontend URL in production
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "PUT,OPTIONS",
+  "Access-Control-Allow-Methods": "GET,OPTIONS",
 };
 
 
@@ -19,7 +19,7 @@ export const handler = async (event) => {
   if (!listId) {
     return {
       statusCode: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: CORS_HEADERS,
       body: JSON.stringify({ error: "Missing 'listId'" }),
     };
   }
@@ -33,21 +33,21 @@ export const handler = async (event) => {
     if (!data.Item) {
       return {
         statusCode: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: CORS_HEADERS,
         body: JSON.stringify({ error: "Item not found" }),
       };
     }
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: CORS_HEADERS,
       body: JSON.stringify(data.Item),
     };
   } catch (err) {
     console.error(err);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: CORS_HEADERS,
       body: JSON.stringify({ error: "Internal server error" }),
     };
   }

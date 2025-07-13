@@ -15,13 +15,7 @@ export const handler = async (event) => {
     return { statusCode: 200, headers: CORS_HEADERS, body: "" };
   }
 
-  if (event.requestContext?.http?.method !== "POST") {
-    return {
-      statusCode: 405,
-      headers: CORS_HEADERS,
-      body: JSON.stringify("Method Not Allowed"),
-    };
-  }
+  console.info("Event received:", event);
 
   const listId = event.queryStringParameters?.listId;
   if (!listId) {
