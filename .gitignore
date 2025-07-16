@@ -7,10 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# Build output
 dist
 dist-ssr
+
+# Local environment
 *.local
+**/.env
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# AWS SAM
+.aws-sam/
+backend/.aws-sam/
 
 # Editor directories and files
 .vscode/*
@@ -22,6 +33,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# AWS SAM
-.aws-sam/
