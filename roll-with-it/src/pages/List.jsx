@@ -11,9 +11,11 @@ function List() {
   const [newItem, setNewItem] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const BASE_API_URL = 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
+
   const fetchList = async () => {
     try {
-      const res = await fetch(`https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getPackingList?listId=${id}`);
+      const res = await fetch(`${BASE_API_URL}/getPackingList?listId=${id}`);
       const result = await res.json();
 
       // If Lambda returned an error format
@@ -60,7 +62,7 @@ function List() {
     setNewItem('');
 
     try {
-      const res = await fetch(`https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/addToPackingList?listId=${id}`, {
+      const res = await fetch(`${BASE_API_URL}/addToPackingList?listId=${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newItem: trimmed }),
@@ -87,7 +89,7 @@ function List() {
   
     try {
       const res = await fetch(
-        `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/updatePackingListItem?listId=${listData.pk}`,
+        `${BASE_API_URL}/updatePackingListItem?listId=${listData.pk}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,7 +124,7 @@ function List() {
 
     try {
         const res = await fetch(
-          `https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/updatePackingList?listId=${listData.pk}`,
+          `${BASE_API_URL}/updatePackingList?listId=${listData.pk}`,
           {
               method: "POST",
               headers: { "Content-Type": "application/json" },

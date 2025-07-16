@@ -10,10 +10,12 @@ function Home() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
 
+  const BASE_API_URL = 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
+
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const res = await fetch('https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/getAllPackingLists');
+        const res = await fetch(`${BASE_API_URL}/getAllPackingLists`);
         const data = await res.json();
         
         console.log("Fetched lists directly:", data); // data is the array of packing lists
@@ -62,7 +64,7 @@ function Home() {
     };
   
     try {
-      const res = await fetch("https://e7pg06nqla.execute-api.us-east-1.amazonaws.com/createPackingList", {
+      const res = await fetch(`${BASE_API_URL}/createPackingList`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
