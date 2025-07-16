@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import Navbar from '../components/Navbar' // Adjust path if needed
+import Navbar from './Navbar' // Adjust path if needed
 
 describe('Navbar Component', () => {
   test('renders brand name', () => {
