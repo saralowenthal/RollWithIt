@@ -18,6 +18,11 @@ const About = () => {
           <p className="text-secondary">
             Choose from curated lists for different occasions, or create your own. Wherever you're going, we've got your back — so you can just <strong>roll with it</strong>.
           </p>
+          <p className="text-muted mt-4">
+            Developed by <a href="https://github.com/tzipporahg" target="_blank">Tzipporah Gordon</a>,  
+            <a href="https://github.com/saralowenthal" target="_blank"> Sara (Lowenthal) Miller</a>, and 
+            <a href="https://github.com/PessieM" target="_blank"> Pessie Mittelman</a>.
+          </p>
         </div>
       </div>
     </div>
