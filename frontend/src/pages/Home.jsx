@@ -9,8 +9,8 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
-  
-  const BASE_API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const BASE_API_URL = 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
 
   useEffect(() => {
     const fetchLists = async () => {
