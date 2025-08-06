@@ -31,7 +31,8 @@
 - ✏️ **Edit Items** – Update list titles or item names  
 - ✅ **Check Off Items** – Mark things as packed  
 - 🗃️ **Persistent Storage** – Data saved and retrieved via the backend  
-- 📱 **Responsive Design** – Works on phones, tablets, and desktops  
+- 📱 **Responsive Design** – Works on phones, tablets, and desktops
+- 🎨 **Theme Customization** - Instantly update colors and fonts with saved preferences
 
 ---
 

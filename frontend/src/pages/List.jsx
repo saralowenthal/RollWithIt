@@ -11,7 +11,7 @@ function List() {
   const [newItem, setNewItem] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const BASE_API_URL = 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
+  const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
 
   const fetchList = async () => {
     try {
@@ -169,7 +169,7 @@ function List() {
           <input
             type="text"
             className="form-control text-center fw-bold"
-            style={{ fontSize: "1.5rem", maxWidth: "400px" }}
+            style={{ fontSize: "1.5rem", maxWidth: "400px", backgroundColor: "#ffffff22" }}
             value={listData.title}
             onChange={(e) => setListData({ ...listData, title: e.target.value })}
             onBlur={(e) => handleUpdateListName(e.target.value)}
@@ -225,6 +225,7 @@ function List() {
         <input
           type="text"
           className="form-control"
+          style={{ backgroundColor: "#ffffff22", color: "var(--bs-body-color)" }}
           placeholder="Add new item"
           value={newItem}
           onChange={(e) => setNewItem(e.target.value)}

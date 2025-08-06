@@ -22,7 +22,7 @@ const Navbar = () => {
     <nav
       className="navbar fixed-top navbar-expand-lg"
       style={{
-        backgroundColor: 'var(--bs-body-bg)',
+        backgroundColor: '#fff',
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
       }}
     >
