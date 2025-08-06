@@ -30,7 +30,8 @@
 - 📋 **View Lists** – Browse all your saved lists and items  
 - ✏️ **Edit Items** – Update list titles or item names  
 - ✅ **Check Off Items** – Mark things as packed  
-- 🗃️ **Persistent Storage** – Data saved and retrieved via the backend  
+- 🗃️ **Persistent Storage** – Data saved and retrieved via the backend
+- 📄 **Export Lists** – Download your packing list as a PDF or CSV
 - 📱 **Responsive Design** – Works on phones, tablets, and desktops  
 
 ---
