@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DownloadPDFButton from '../components/DownloadPDFButton';
+import DownloadCSVButton from '../components/DownloadCSVButton';
 
 function List() {
-  const { id } = useParams(); // Gets the `listId` from URL like /list/:id
+  const { id } = useParams(); // Gets the listId from URL like /list/:id
   const navigate = useNavigate();
 
   const [listData, setListData] = useState(null);
@@ -233,7 +235,7 @@ function List() {
           onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
         />
         <button
-          className="btn btn-primary"
+          className="btn btn-outline-primary"
           onClick={handleAddItem}
           disabled={!newItem.trim()}
         >
@@ -241,15 +243,35 @@ function List() {
         </button>
       </div>
 
-      {/* Just return home */}
-      <div className="mt-4">
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => navigate('/')}
-        >
-          Return Home
-        </button>
+      {/* Download Buttons */}
+      <div className="mt-4 d-flex justify-content-center">
+        <div className="d-flex">
+          <div className="me-2">
+            <DownloadPDFButton 
+              listData={listData} 
+              items={items} 
+              disabled={!items || items.length === 0}
+            />
+          </div>
+          <div>
+            <DownloadCSVButton 
+              listData={listData} 
+              items={items}
+              disabled={!items || items.length === 0}
+            />
+          </div>
+        </div>
       </div>
+          
+        {/* Return home */}
+        <div className="mt-4">
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => navigate('/')}
+          >
+            Return Home
+          </button>
+        </div>
     </div>
   );
 }
