@@ -21,18 +21,12 @@ exports.handler = async (event) => {
     const data = await ddbDocClient.send(new ScanCommand(params));
     console.log("Scan success:", data);
 
-    if (!data.Items || data.Items.length === 0) {
-      return {
-        statusCode: 404,
-        headers: CORS_HEADERS,
-        body: JSON.stringify("No items found"),
-      };
-    }
+    const packingLists = (data.Items || []).filter(item => item.pk !== "theme");
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify(data.Items),
+      body: JSON.stringify(packingLists),
     };
   } catch (err) {
     console.error("Error retrieving items from DynamoDB", err);

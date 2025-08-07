@@ -13,7 +13,7 @@ function List() {
   const [newItem, setNewItem] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const BASE_API_URL = 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
+  const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'https://h2fqo38sa8.execute-api.us-east-1.amazonaws.com';
 
   const fetchList = async () => {
     try {
@@ -167,26 +167,24 @@ function List() {
   return (
     <div className="container py-5" style={{ maxWidth: '700px' }}>
       <div className="d-flex justify-content-center align-items-center mb-4">
-        {/* <h2 className="fw-bold mb-0 text-center">{listData.title}</h2> */}
         <div className="input-group mb-3 justify-content-center">
           <input
-              type="text"
-              className="form-control text-center fw-bold"
-              style={{ fontSize: "1.5rem", maxWidth: "400px" }}
-              value={listData.title}
-              onChange={(e) => setListData({ ...listData, title: e.target.value })}
-              onBlur={(e) => handleUpdateListName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    e.target.blur();
-                }
-              }}
+            type="text"
+            className="form-control text-center fw-bold"
+            style={{ fontSize: "1.5rem", maxWidth: "400px", backgroundColor: "#ffffff22" }}
+            value={listData.title}
+            onChange={(e) => setListData({ ...listData, title: e.target.value })}
+            onBlur={(e) => handleUpdateListName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.target.blur();
+              }
+            }}
           />
         </div>
       </div>
-
-      {/* List of Items */}
+  
       <ul className="list-group mb-4">
         {!items.length ? (
           <li className="list-group-item text-muted fst-italic">No items yet.</li>
@@ -195,6 +193,7 @@ function List() {
             <li
               key={item.id}
               className="list-group-item d-flex align-items-center"
+              style={{ backgroundColor: 'white'}}
             >
               <input
                 type="checkbox"
@@ -214,21 +213,21 @@ function List() {
                     e.target.value
                 )}
                 className={`form-control flex-grow-1 border-0 ${
-                    item.checked ? "text-decoration-line-through text-muted" : ""
+                  item.checked ? "text-decoration-line-through text-muted" : ""
                 }`}
-                style={{ cursor: 'text' }}
+                style={{ cursor: 'text', backgroundColor: 'transparent' }}
                 aria-label={`Edit item ${item.text}`}
-                />
+              />
             </li>
           ))
         )}
       </ul>
-
-      {/* Add New Item */}
+  
       <div className="input-group">
         <input
           type="text"
           className="form-control"
+          style={{ backgroundColor: "#ffffff22", color: "var(--bs-body-color)" }}
           placeholder="Add new item"
           value={newItem}
           onChange={(e) => setNewItem(e.target.value)}
@@ -236,6 +235,11 @@ function List() {
         />
         <button
           className="btn btn-outline-primary"
+          style={{
+            backgroundColor: 'var(--bs-primary)',
+            color: '#fff',
+            border: 'none'
+          }}
           onClick={handleAddItem}
           disabled={!newItem.trim()}
         >
@@ -273,7 +277,7 @@ function List() {
           </button>
         </div>
     </div>
-  );
+  );  
 }
 
 export default List;
