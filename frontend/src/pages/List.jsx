@@ -170,8 +170,8 @@ function List() {
         <div className="input-group mb-3 justify-content-center">
           <input
             type="text"
-            className="form-control text-center fw-bold"
-            style={{ fontSize: "1.5rem", maxWidth: "400px", backgroundColor: "#ffffff22" }}
+            className="packing-list-title form-control text-center fw-bold"
+            style={{ fontSize: "1.5rem", maxWidth: "400px" }}
             value={listData.title}
             onChange={(e) => setListData({ ...listData, title: e.target.value })}
             onBlur={(e) => handleUpdateListName(e.target.value)}
@@ -193,7 +193,7 @@ function List() {
             <li
               key={item.id}
               className="list-group-item d-flex align-items-center"
-              style={{ backgroundColor: 'white'}}
+              // style={{ backgroundColor: 'white'}}
             >
               <input
                 type="checkbox"
@@ -234,7 +234,7 @@ function List() {
           onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
         />
         <button
-          className="btn btn-outline-primary"
+          className="btn btn-primary"
           style={{
             backgroundColor: 'var(--bs-primary)',
             color: '#fff',

@@ -24,10 +24,13 @@ const deriveThemeVariables = ({
   const linkColor = chroma(primaryColor).brighten(0.3).hex();
   const linkHover = chroma(primaryColor).darken(0.3).hex();
 
-  return {
+  const themeMode = chroma(backgroundColor).luminance() < 0.5 ? "dark" : "light";
+
+  const cssVars = {
     "--bs-body-bg": backgroundColor,
     "--bs-body-color": textColor,
     "--bs-primary": primaryColor,
+    "--bs-primary-rgb": primaryColor,
     "--bs-secondary": secondaryColor,
     "--bs-border-color": "#dee2e6",
     "--bs-link-color": linkColor,
@@ -37,6 +40,8 @@ const deriveThemeVariables = ({
     "--bs-btn-hover-bg": primaryHover,
     "--bs-btn-hover-border-color": primaryHover,
   };
+
+  return { cssVars, themeMode };
 };
 
 export const ThemeProvider = ({ children }) => {
@@ -59,10 +64,13 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const cssVars = deriveThemeVariables(themeSettings);
+    const { cssVars, themeMode } = deriveThemeVariables(themeSettings);
+
     Object.entries(cssVars).forEach(([key, value]) => {
       document.documentElement.style.setProperty(key, value);
     });
+
+    document.documentElement.setAttribute("data-bs-theme", themeMode);
   }, [themeSettings]);
 
   const updateTheme = async (newSettings) => {

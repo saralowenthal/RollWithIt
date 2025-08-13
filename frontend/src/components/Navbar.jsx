@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ThemeCustomizer from './ThemeCustomizer';
 import { useRef, useEffect, useState } from "react";
 
@@ -55,7 +56,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div
             className="navbar-nav ms-auto"
-            style={{ gap: '1.6rem', fontSize: '1.1rem' }}
+            style={{ rowGap: '.5rem', columnGap: '1.6rem', fontSize: '1.1rem' }}
           >
             {[
               { path: '/', label: 'Home' },
