@@ -109,7 +109,6 @@ function Home() {
               className="card h-100 rounded border d-flex align-items-center justify-content-center p-3 list-card"
               style={{
                 aspectRatio: '4 / 3',
-                backgroundColor: 'white',
                 color: 'var(--bs-body-color)',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease'

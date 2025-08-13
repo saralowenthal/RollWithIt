@@ -40,6 +40,17 @@
   padding: 2em;
 }
 
+.card, .list-group-item, .packing-list-title, .form-check-input {
+  background-color: white;
+}
+
+[data-bs-theme=dark] .card,
+[data-bs-theme=dark] .packing-list-title,
+[data-bs-theme=dark] .form-check-input,
+[data-bs-theme=dark] .list-group-item {
+  background-color: #ffffff55;
+}
+
 .read-the-docs {
   color: #888;
 }
